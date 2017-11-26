@@ -1,7 +1,6 @@
 library(tidyverse)
 
 barrios_m <- readRDS("Data/barrios_merged.RDS")
-barrios_p <- readRDS("Data/barrios_pil.RDS")
 
 manzbarr <- readRDS("Data/Manzanasbarriospiloto.RDS")
 
@@ -93,16 +92,21 @@ dataFunc <- function(a, b, c) {
     t <- left_join(t,barrios,by=c("d" = "BARRIO"))
     t$codename <- rep(as.character(b), nrow(t))
     t$bigname <- rep(as.character(c), nrow(t))
+    t$manzb <- (t$ID_W %in% as.character(manzbarr$MANZENT))
     return(t)
   } else {
     t <- readRDS(as.character(a))[,c("ID_W","value")]
     t <- filter(t, t$ID_W %in% as.character(barrios_m@data$MANZENT))
     t$d <- barrios_m@data[match(t$ID_W,as.character(barrios_m@data$MANZENT)),]$BARRIO
+    t <- left_join(t,barrios,by=c("d" = "BARRIO"))
     t$codename <- rep(as.character(b), nrow(t))
     t$bigname <- rep(as.character(c), nrow(t))
+    t$manzb <- (t$ID_W %in% as.character(manzbarr$MANZENT))
     return(t)
   }
 }
 
 data <- apply(vars, 1, function(x) dataFunc(x['path'],x['codename'],x['bigname']))
 data <-  bind_rows(data)
+
+
