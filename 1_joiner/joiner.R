@@ -1,9 +1,7 @@
 library(tidyverse)
 
 barrios_m <- readRDS("Data/barrios_merged.RDS")
-
 manzbarr <- readRDS("Data/Manzanasbarriospiloto.RDS")
-
 
 barrios <- read_delim("Id,BARRIO,CIUDAD,COMUNA
                       0,Barrio Amanecer,Temuco - Padre Las Casas,Temuco
@@ -38,7 +36,6 @@ barrios <- read_delim("Id,BARRIO,CIUDAD,COMUNA
                       0,Leonera 2,Gran Concepción,Chiguayante
                       0,Padre Hurtado (CCSS),Temuco - Padre Las Casas,Temuco
                       0,Las Quilas,Temuco - Padre Las Casas,Temuco", delim = ",")
-
 
 vars <- data.frame(
   bigname = c(
@@ -85,20 +82,20 @@ vars <- data.frame(
   )
 )
 
-
 dataFunc <- function(a, b, c) {
-  if(b=="acc" | b=="acc2") {
-    t <- readRDS(as.character(a))[,c("ID_W","value","d")]
-    t <- left_join(t,barrios,by=c("d" = "BARRIO"))
+  if (b == "acc" | b == "acc2") {
+    t <- readRDS(as.character(a))[, c("ID_W", "value", "d")]
+    t <- left_join(t, barrios, by = c("d" = "BARRIO"))
     t$codename <- rep(as.character(b), nrow(t))
     t$bigname <- rep(as.character(c), nrow(t))
     t$manzb <- (t$ID_W %in% as.character(manzbarr$MANZENT))
     return(t)
   } else {
-    t <- readRDS(as.character(a))[,c("ID_W","value")]
+    t <- readRDS(as.character(a))[, c("ID_W", "value")]
     t <- filter(t, t$ID_W %in% as.character(barrios_m@data$MANZENT))
-    t$d <- barrios_m@data[match(t$ID_W,as.character(barrios_m@data$MANZENT)),]$BARRIO
-    t <- left_join(t,barrios,by=c("d" = "BARRIO"))
+    t$d <-
+      barrios_m@data[match(t$ID_W, as.character(barrios_m@data$MANZENT)), ]$BARRIO
+    t <- left_join(t, barrios, by = c("d" = "BARRIO"))
     t$codename <- rep(as.character(b), nrow(t))
     t$bigname <- rep(as.character(c), nrow(t))
     t$manzb <- (t$ID_W %in% as.character(manzbarr$MANZENT))
@@ -106,7 +103,7 @@ dataFunc <- function(a, b, c) {
   }
 }
 
-data <- apply(vars, 1, function(x) dataFunc(x['path'],x['codename'],x['bigname']))
-data <-  bind_rows(data)
+data <- apply(vars, 1, function(x)
+  dataFunc(x["path"], x["codename"], x["bigname"]))
 
-
+data <- bind_rows(data)
