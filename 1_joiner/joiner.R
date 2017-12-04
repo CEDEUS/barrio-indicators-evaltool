@@ -92,10 +92,8 @@ dataFunc <- function(a, b, c) {
     return(t)
   } else {
     t <- readRDS(as.character(a))[, c("ID_W", "value")]
-    t <- filter(t, t$ID_W %in% as.character(barrios_m@data$MANZENT))
-    t$d <-
-      barrios_m@data[match(t$ID_W, as.character(barrios_m@data$MANZENT)), ]$BARRIO
-    t <- left_join(t, barrios, by = c("d" = "BARRIO"))
+    t <- right_join(t,barrios_m@data, by = c("ID_W" = "MANZENT"))
+    t <- right_join(t,barrios, by = "BARRIO") %>% mutate(d=BARRIO)
     t$codename <- rep(as.character(b), nrow(t))
     t$bigname <- rep(as.character(c), nrow(t))
     t$manzb <- (t$ID_W %in% as.character(manzbarr$MANZENT))
