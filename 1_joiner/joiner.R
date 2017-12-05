@@ -85,6 +85,7 @@ vars <- data.frame(
 dataFunc <- function(a, b, c) {
   if (b == "acc" | b == "acc2") {
     t <- readRDS(as.character(a))[, c("ID_W", "value", "d")]
+    t$ID_W <- as.numeric(t$ID_W)
     t <- left_join(t, barrios, by = c("d" = "BARRIO"))
     t$codename <- rep(as.character(b), nrow(t))
     t$bigname <- rep(as.character(c), nrow(t))
@@ -92,6 +93,7 @@ dataFunc <- function(a, b, c) {
     return(t)
   } else {
     t <- readRDS(as.character(a))[, c("ID_W", "value")]
+    t$ID_W <- as.numeric(t$ID_W)
     t <- right_join(t,barrios_m@data, by = c("ID_W" = "MANZENT"))
     t <- right_join(t,barrios, by = "BARRIO") %>% mutate(d=BARRIO)
     t$codename <- rep(as.character(b), nrow(t))
