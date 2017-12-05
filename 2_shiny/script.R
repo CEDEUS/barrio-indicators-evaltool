@@ -5,10 +5,12 @@ manzbarr <- readRDS("Data/Manzanasbarriospiloto.RDS")
 
 # Unit counter
 
-ub <- barrios_m@data %>% group_by(BARRIO) %>% summarise(n=n())
-uba <- manzbarr %>% group_by(BARRIO) %>% summarise(n=n())
+units <-
+  right_join(
+    barrios_m@data %>% group_by(BARRIO) %>% summarise(BUFFER = n()),
+    manzbarr %>% group_by(BARRIO) %>% summarise(RBARRIO = n()),
+    by = "BARRIO"
+  )
 
-ubj <- right_join(ub,uba,by="BARRIO")
-rm(ub,uba)
+units
 
-names(ubj) <- c("BARRIO","BUFFER","RBARRIO")
