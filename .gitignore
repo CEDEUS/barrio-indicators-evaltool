@@ -2,3 +2,5 @@
 .Rproj.user
 data.csv
 .Rproj
+old_tests.R
+Data/

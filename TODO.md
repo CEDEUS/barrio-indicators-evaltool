@@ -14,6 +14,7 @@ Barrio v/s buffer / Contexts / Major cities
 - Boxplots
 - Histograms
 - Ranks
+- Quantiles
 - Statistical tests based on normality?
 
 
