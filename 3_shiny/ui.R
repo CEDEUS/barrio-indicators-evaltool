@@ -13,9 +13,11 @@ sidebar <- dashboardSidebar(
     menuSubItem("Graphical", tabName = "dashboard", icon = icon("bar-chart-o")),
     menuSubItem("Table", tabName = "widgets", icon = icon("th"))),
     menuItem("Context", tabName = "none", icon = icon("home"),
-    menuSubItem("Table", tabName = "widgets2", icon = icon("bar-chart-o"))
-             
-             )
+    menuSubItem("Graphical", tabName = "dashboard2", icon = icon("bar-chart-o")),
+    menuSubItem("Table", tabName = "widgets2", icon = icon("th"))),
+    menuItem("City", tabName = "none", icon = icon("home"),
+    menuSubItem("Graphical", tabName = "dashboard3", icon = icon("bar-chart-o")),
+    menuSubItem("Table", tabName = "widgets3", icon = icon("th")))
              
   )
 )
@@ -50,14 +52,32 @@ tabItem(tabName = "widgets",
                  column(12,h2("Barrio table overview"),uiOutput("Variable2"),
                  div(style = "height:25px", ""),
                  DT::dataTableOutput('tbl'))
+        )
+),
+tabItem(tabName = "dashboard2",
+        fluidRow(div(style = "height:0px", ""),column(12,h2("Graphical context overview")),
+                 column(6,div(style = "height:25px", ""),uiOutput("Variable5")),
+                 column(6,div(style = "height:25px", ""),uiOutput("Cities")),
+                 column(width = 12, plotOutput("plot4", height=600, width = "100%"))
+        )),
+tabItem(tabName = "widgets2",
+        fluidRow(div(style = "height:0px", ""),
+                 column(12,h2("Context table overview"),uiOutput("Variable3"),
+                        div(style = "height:25px", ""),
+                        DT::dataTableOutput('tbl2'))
                  
         )
 ),
-tabItem(tabName = "widgets2",
+tabItem(tabName = "dashboard3",
+        fluidRow(div(style = "height:0px", ""),column(12,h2("Graphical cities overview")),
+                 column(6,div(style = "height:25px", ""),uiOutput("Variable6")),
+                 column(width = 12, plotOutput("plot5", height=600, width = "100%"))
+        )),
+tabItem(tabName = "widgets3",
         fluidRow(div(style = "height:0px", ""),
-                 column(12,h2("Barrio table overview"),uiOutput("Variable3"),
+                 column(12,h2("Cities table overview"),uiOutput("Variable4"),
                         div(style = "height:25px", ""),
-                        DT::dataTableOutput('tbl2'))
+                        DT::dataTableOutput('tbl3'))
                  
         )
 )
