@@ -3,39 +3,39 @@ library(tidyverse)
 barrios_m <- readRDS("Data/barrios_merged.RDS")
 manzbarr <- readRDS("Data/Manzanasbarriospiloto.RDS")
 
-barrios <- read_delim("Id,BARRIO,CIUDAD,COMUNA
-                      0,Barrio Amanecer,Temuco - Padre Las Casas,Temuco
-                      0,Barrio Estación,Temuco - Padre Las Casas,Temuco
-                      0,Camilo Henriquez,Gran Concepción,Concepción
-                      0,Fundo El Carmen,Temuco - Padre Las Casas,Temuco
-                      0,Lomas de San Sebastian,Gran Concepción,Concepción
-                      0,Villa Los Fundadores,Valdivia,Valdivia
-                      0,Parque Krahmer,Valdivia,Valdivia
-                      0,Sector Regional,Valdivia,Valdivia
-                      0,Barrio Brasil,Gran Santiago,Santiago
-                      0,Villa Codelco,Copiapó,Copiapó
-                      0,Tierra Viva Oriente,Copiapó,Copiapó
-                      0,El Llano,Gran Coquimbo,Coquimbo
-                      0,Villa Vista Hermosa,Gran Coquimbo,La Serena
-                      0,Barrio San Miguel,Gran Santiago,San Miguel
-                      0,Barrio Las Lilas,Gran Santiago,Providencia
-                      0,Barrio Jardin del Este,Gran Santiago,Vitacura
-                      0,Barrio Plaza de Maipú,Gran Santiago,Maipú
-                      0,Barrios Bajos,Valdivia,Valdivia
-                      0,Guayacán,Gran Coquimbo,Coquimbo
-                      0,Villa Esperanza,Copiapó,Copiapó
-                      0,El Faro Parte Alta,Gran Coquimbo,Coquimbo
-                      0,Juan XXIII,Gran Coquimbo,La Serena
-                      0,Chorrillos,Gran Santiago,Independencia
-                      0,Brasilia,Gran Santiago,San Miguel
-                      0,El Mariscal,Gran Santiago,Puente Alto
-                      0,U.V. 35 José María Caro,Gran Santiago,Lo Espejo
-                      0,Pucará de Lasana,Gran Santiago,Quilicura
-                      0,Juan González Huerta,Gran Concepción,Talcahuano
-                      0,Cerro Verde Alto,Gran Concepción,Penco
-                      0,Leonera 2,Gran Concepción,Chiguayante
-                      0,Padre Hurtado (CCSS),Temuco - Padre Las Casas,Temuco
-                      0,Las Quilas,Temuco - Padre Las Casas,Temuco", delim = ",")
+barrios <- read_delim("ID,BARRIO,CIUDAD,COMUNA,LOCATION
+0,Barrio Amanecer,Temuco - Padre Las Casas,Temuco,Periferico
+                      1,Barrio Estación,Temuco - Padre Las Casas,Temuco,Central
+                      2,Camilo Henriquez,Gran Concepción,Concepción,Central
+                      3,Fundo El Carmen,Temuco - Padre Las Casas,Temuco,Periferico
+                      4,Lomas de San Sebastian,Gran Concepción,Concepción,Periferico
+                      5,Villa Los Fundadores,Valdivia,Valdivia,Periferico
+                      6,Parque Krahmer,Valdivia,Valdivia,Peri-central
+                      7,Sector Regional,Valdivia,Valdivia,Peri-central
+                      8,Barrio Brasil,Gran Santiago,Santiago,Central
+                      9,Villa Codelco,Copiapó,Copiapó,Peri-central
+                      10,Tierra Viva Oriente,Copiapó,Copiapó,Periferico
+                      11,El Llano,Gran Coquimbo,Coquimbo,Peri-central
+                      12,Villa Vista Hermosa,Gran Coquimbo,La Serena,Peri-central
+                      13,Barrio San Miguel,Gran Santiago,San Miguel,Peri-central
+                      14,Barrio Las Lilas,Gran Santiago,Providencia,Peri-central
+                      15,Barrio Jardin del Este,Gran Santiago,Vitacura,Peri-central
+                      16,Barrio Plaza de Maipú,Gran Santiago,Maipú,Central
+                      17,Barrios Bajos,Valdivia,Valdivia,Peri-central
+                      18,Guayacán,Gran Coquimbo,Coquimbo,Peri-central
+                      19,Villa Esperanza,Copiapó,Copiapó,Periferico
+                      20,El Faro Parte Alta,Gran Coquimbo,Coquimbo,Peri-central
+                      21,Juan XXIII,Gran Coquimbo,La Serena,Periferico
+                      22,Chorrillos,Gran Santiago,Independencia,Peri-central
+                      23,Brasilia,Gran Santiago,San Miguel,Peri-central
+                      24,El Mariscal,Gran Santiago,Puente Alto,Periferico
+                      25,U.V. 35 José María Caro,Gran Santiago,Lo Espejo,Peri-central
+                      26,Pucará de Lasana,Gran Santiago,Quilicura,Periferico
+                      27,Juan González Huerta,Gran Concepción,Talcahuano,Central
+                      28,Cerro Verde Alto,Gran Concepción,Penco,Peri-central
+                      29,Leonera 2,Gran Concepción,Chiguayante,Periferico
+                      30,Padre Hurtado (CCSS),Temuco - Padre Las Casas,Temuco,Periferico
+                      31,Las Quilas,Temuco - Padre Las Casas,Temuco,Peri-central", delim = ",")
 
 vars <- data.frame(
   bigname = c(

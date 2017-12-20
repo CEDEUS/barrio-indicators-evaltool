@@ -58,3 +58,15 @@ dataset %>%
     UNITS_BARRIO=length(listo[manzb==T]),
     UNITS_BUFFER=length(listo[manzb==F])
   )
+
+#Units by city all variables wide format
+dataset %>%
+  dplyr::group_by(codename, LOCATION) %>%
+  dplyr::summarize(
+    MEAN_BARRIO=mean(listo[manzb==T],na.rm = T),
+    MEAN_BUFFER=mean(listo[manzb==F],na.rm = T),
+    STD_BARRIO=sd(listo[manzb==T],na.rm = T),
+    STD_BUFFER=sd(listo[manzb==F],na.rm = T),    
+    UNITS_BARRIO=length(listo[manzb==T]),
+    UNITS_BUFFER=length(listo[manzb==F])
+  )

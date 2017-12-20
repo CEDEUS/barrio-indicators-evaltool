@@ -9,8 +9,14 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("General overview", tabName = "overview", icon = icon("dashboard")),
-    menuItem("Barrio", tabName = "dashboard", icon = icon("dashboard")),
-    menuItem("Variable", tabName = "widgets", icon = icon("th"))
+    menuItem("Barrio", tabName = "none", icon = icon("home"),
+    menuSubItem("Graphical", tabName = "dashboard", icon = icon("bar-chart-o")),
+    menuSubItem("Table", tabName = "widgets", icon = icon("th"))),
+    menuItem("Context", tabName = "none", icon = icon("home"),
+    menuSubItem("Table", tabName = "widgets2", icon = icon("bar-chart-o"))
+             
+             )
+             
   )
 )
 
@@ -24,11 +30,12 @@ body <- dashboardBody(tabItems(
                    valueBoxOutput("varsnBox",width = 4))
           ),
   tabItem(tabName = "dashboard",
-  fluidRow(div(style = "height:0px", ""),column(12,h2("Barrio overview")),
+  fluidRow(div(style = "height:0px", ""),column(12,h2("Graphical barrio overview")),
     column(6,div(style = "height:25px", ""),uiOutput("Variable")),
     column(6,div(style = "height:25px", ""),uiOutput("Barrio")),
-    column(width = 6, plotOutput("plot1", height=300, width = "100%")),
-    column(width = 6, plotOutput("plot2", height=300, width = "100%"))
+    column(width = 4, plotOutput("plot1", height=300, width = "100%")),
+    column(width = 4, plotOutput("plot2", height=300, width = "100%")),
+    column(width = 4, plotOutput("plot3", height=300, width = "100%"))
 ),
 fluidRow(div(style = "height:25px", ""),
          valueBoxOutput("samplesizeBox",width = 4),
@@ -40,9 +47,17 @@ fluidRow(div(style = "height:25px", ""),
 ),
 tabItem(tabName = "widgets",
         fluidRow(div(style = "height:0px", ""),
-                 column(12,h2("Variable overview"),uiOutput("Variable2"),
+                 column(12,h2("Barrio table overview"),uiOutput("Variable2"),
                  div(style = "height:25px", ""),
                  DT::dataTableOutput('tbl'))
+                 
+        )
+),
+tabItem(tabName = "widgets2",
+        fluidRow(div(style = "height:0px", ""),
+                 column(12,h2("Barrio table overview"),uiOutput("Variable3"),
+                        div(style = "height:25px", ""),
+                        DT::dataTableOutput('tbl2'))
                  
         )
 )

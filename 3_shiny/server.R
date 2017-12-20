@@ -22,6 +22,17 @@ table_vars_overview <- dataset %>%
     UNITS_BUFFER=length(listo[manzb==F])
   )
 
+table_context_overview  <- dataset %>%
+  dplyr::group_by(codename, LOCATION) %>%
+  dplyr::summarize(
+    MEAN_BARRIO=mean(listo[manzb==T],na.rm = T),
+    MEAN_BUFFER=mean(listo[manzb==F],na.rm = T),
+    STD_BARRIO=sd(listo[manzb==T],na.rm = T),
+    STD_BUFFER=sd(listo[manzb==F],na.rm = T),    
+    UNITS_BARRIO=length(listo[manzb==T]),
+    UNITS_BUFFER=length(listo[manzb==F])
+  )
+
 
 function(input, output, session) {
   
@@ -33,6 +44,11 @@ function(input, output, session) {
   output$Variable2 <- renderUI({
     variableList2 <- unique(dataset$bigname)
     selectInput("VariableSelection2", "Variable", choices = variableList2, selected = variableList2[1],width = "100%")
+  })
+  
+  output$Variable3 <- renderUI({
+    variableList3 <- unique(dataset$bigname)
+    selectInput("VariableSelection3", "Variable", choices = variableList3, selected = variableList3[1],width = "100%")
   })
   
   output$Barrio <- renderUI({
@@ -74,18 +90,31 @@ function(input, output, session) {
   varc[varc==T] <- 2
   varc[varc==F] <- 1
   
-  output$plot1 <- renderPlot({  
-  	hist(var,xlab="", main=paste("Histogram of",input$VariableSelection))
-   })
+  output$plot1 <- renderPlot({
+    ggplot((all_manzanas_no_na %>% filter(codename == varcodename & d == barrioname)), aes(listo, fill = manzb)) +
+      geom_histogram(alpha = 0.5, aes(y = ..density..), position = 'identity') +
+      labs(fill="Barrio") + 
+      ggtitle(label="Histogram")
+  })
   
   output$plot2 <- renderPlot({
-    qqnorm(var, col = varc)
-    qqline(var,lty=2)
+    ggplot((all_manzanas_no_na %>% filter(codename == varcodename & d == barrioname)), aes(sample = listo, colour = manzb)) +
+      stat_qq() + labs(colour="Barrio") + ggtitle(label ="Q-Q Plot")
   })
+
+  output$plot3 <- renderPlot({
+    fun_mean <- function(x){
+      return(data.frame(y=round(mean(x),2),label=paste0("M= ",round(mean(x,na.rm=T),2),"; ","N= ",length(x))))}
+    
+    ggplot((all_manzanas_no_na %>% filter(codename == varcodename & d == barrioname)), aes(x = manzb, y = listo)) +
+      geom_boxplot() + labs(x="Barrio",y="Value") + ggtitle(label ="Boxplot") +
+      stat_summary(fun.y = mean, geom="point",colour="darkred", size=3) +
+      stat_summary(fun.data = fun_mean, geom="text", vjust=-0.7)
+  })    
   
   output$samplesizeBox <- renderValueBox({
     valueBox(
-      length(var), "Units",
+      length(var), "Total spatial units",
       color = "aqua"
     )})
   
@@ -126,6 +155,13 @@ function(input, output, session) {
   output$tbl = DT::renderDataTable(
     datatable(filter(table_vars_overview, codename == varcodename2))
   )
+  })
+  
+  observeEvent({c(input$VariableSelection3)},{
+    varcodename3 <- as.character(all_manzanas_no_na[match(input$VariableSelection3,all_manzanas_no_na$bigname),]$codename)
+    output$tbl2 = DT::renderDataTable(
+      datatable(filter(table_context_overview, codename == varcodename3))
+    )
   })
   
 }
