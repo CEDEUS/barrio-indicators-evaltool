@@ -4,9 +4,26 @@ library(tidyverse)
 library(moments)
 library(DT)
 library(gridExtra)
+library(dunn.test)
+library(memoise)
+library(purrrlyr)
+library(broom)
+library(Ckmeans.1d.dp)
+library(ggrepel)
 
 options(shiny.trace=F)
 
+pformat <- function(p) {
+  if (p == 1) {
+    return("1.0000")
+  }
+  else {
+    rightspaces <- 4
+    rightdigits <- substr(paste0(sprintf("%1.4f", p), 
+                                 "000000000"), 3, rightspaces + 2)
+    return(paste0("0.", rightdigits))
+  }
+}
 
 dataset <- read_csv("/Users/robsalasco/Dev/barrio-indicators-evaltool/data.csv")
 all_manzanas_no_na <- dataset %>% filter(!is.na(listo))
@@ -51,8 +68,70 @@ table_cities_overview  <- dataset %>%
     UNITS_BUFFER=length(listo[manzb==F])
   )
 
+#######################################################
+
+test1 <- dataset %>% filter(!is.na(listo))
+vars_test1 <- unique(test1$codename)
+
+stage_2_nonormal_test <- test1 %>% 
+  slice_rows(c("codename")) %>% 
+  by_slice(~tidy(with(.x,kruskal.test(listo~factor(LOCATION))))) %>%
+  unnest() %>% select(codename,p.value,method)
+
+dunn.dt.loc <- function() { bind_rows(lapply(vars_test1, function(x) {
+  log <- capture.output({
+    dunn <-
+      dunn.test(
+        subset(test1, codename == x)$listo,
+        factor(subset(test1, codename == x)$LOCATION),
+        list = T,
+        table = F,
+        kw = F
+      )
+  })
+  return(data.frame(
+    var = rep(unique(subset(
+      test1, codename == x
+    )$codename), length(dunn$comparisons)),
+    contexto = dunn$comparisons,
+    p.value = pformat(dunn$P.adjusted)
+  ))
+}))}
+
+mdunn.dt.loc <- memoise(dunn.dt.loc)
+
+dunn.dt.cit <- function() { bind_rows(lapply(vars_test1, function(x) {
+  log <- capture.output({
+    dunn <-
+      dunn.test(
+        subset(test1, codename == x)$listo,
+        factor(subset(test1, codename == x)$CIUDAD),
+        list = T,
+        table = F,
+        kw = F
+      )
+  })
+  return(data.frame(
+    var = rep(unique(subset(
+      test1, codename == x
+    )$codename), length(dunn$comparisons)),
+    contexto = dunn$comparisons,
+    p.value = pformat(dunn$P.adjusted)
+  ))
+}))}
+
+mdunn.dt.cit <- memoise(dunn.dt.cit)
+#################################
 
 function(input, output, session) {
+  
+  output$test1_resultBox <- renderPrint({
+    mdunn.dt.loc()
+  })
+  
+  output$test2_resultBox <- renderPrint({
+    mdunn.dt.cit()
+  })
   
   output$Variable <- renderUI({
     variableList <- unique(dataset$bigname)
@@ -82,6 +161,11 @@ function(input, output, session) {
   output$Variable6 <- renderUI({
     variableList6 <- unique(dataset$bigname)
     selectInput("VariableSelection6", "Variable", choices = variableList6, selected = variableList6[1],width = "100%")
+  })
+  
+  output$Variable7 <- renderUI({
+    variableList7 <- unique(dataset$bigname)
+    selectInput("VariableSelection7", "Variable", choices = variableList7, selected = variableList7[1],width = "100%")
   })
   
   
@@ -121,9 +205,12 @@ function(input, output, session) {
   req(input$VariableSelection)
   req(input$BarrioSelection)
   
+  
   varcodename <- as.character(all_manzanas_no_na[match(input$VariableSelection,all_manzanas_no_na$bigname),]$codename)
   
   barrioname <- as.character(input$BarrioSelection)
+  
+  var <- (all_manzanas_no_na %>% filter(codename == varcodename & d == barrioname) %>% select(listo))$listo
   
   output$plot1 <- renderPlot({
     ggplot((all_manzanas_no_na %>% filter(codename == varcodename & d == barrioname)), aes(listo, fill = manzb)) +
@@ -274,6 +361,42 @@ function(input, output, session) {
       
       grid.arrange(p1,p2,p3, ncol=1)
       
-    }) 
-  })  
+    })
+    
+  }) 
+  
+  observeEvent({c(input$VariableSelection7)},{
+    req(input$VariableSelection7)
+    varcodename <- as.character(all_manzanas_no_na[match(input$VariableSelection7,all_manzanas_no_na$bigname),]$codename)
+    
+    data1 <-  dataset %>% filter(codename==varcodename & manzb==T) %>% select(listo,d) %>% group_by(d) %>% dplyr::summarize(x=mean(listo,na.rm = T))
+    data1$x <- round(data1$x,2)
+    data1 <- data1 %>% filter(!is.na(x))
+    
+    result1 <- Ckmeans.1d.dp(data1$x, 3)
+    
+    data2 <-  dataset %>% filter(codename==varcodename & manzb==F) %>% select(listo,d) %>% group_by(d) %>% dplyr::summarize(x=mean(listo,na.rm = T))
+    data2$x <- round(data2$x,2)
+    data2 <- data2 %>% filter(!is.na(x))
+    
+    result2 <- Ckmeans.1d.dp(data2$x, 3)
+    
+    output$cluster1 <- renderPlot({
+      ggplot(data = data1, aes(x = 1:nrow(data1), y = x, colour=as.factor(result1$cluster))) +
+        geom_hline(yintercept=round(result1$centers,2), linetype="dashed", color = "black") +
+        geom_point() + geom_text_repel(aes(label=d),size = 3)+
+        labs(x = "index",colour="cluster",y="value") +
+        scale_y_continuous(breaks = sort(c(seq(min(data1$x), max(data1$x), length.out=2), round(result1$centers,2)))) + ggtitle("Barrio")
+    })
+    
+    
+    
+    output$cluster2 <- renderPlot({
+      ggplot(data = data2, aes(x = 1:nrow(data2), y = x, colour=as.factor(result2$cluster))) +
+        geom_hline(yintercept=round(result2$centers,2), linetype="dashed", color = "black") +
+        geom_point() + geom_text_repel(aes(label=d),size = 3)+
+        labs(x = "index",colour="cluster",y="value") +
+        scale_y_continuous(breaks = sort(c(seq(min(data2$x), max(data2$x), length.out=2), round(result2$centers,2)))) + ggtitle("Buffer")
+    })
+  })
 }

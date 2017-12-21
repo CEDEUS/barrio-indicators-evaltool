@@ -11,13 +11,16 @@ sidebar <- dashboardSidebar(
     menuItem("General overview", tabName = "overview", icon = icon("dashboard")),
     menuItem("Barrio", tabName = "none", icon = icon("home"),
     menuSubItem("Graphical", tabName = "dashboard", icon = icon("bar-chart-o")),
-    menuSubItem("Table", tabName = "widgets", icon = icon("th"))),
+    menuSubItem("Table", tabName = "widgets", icon = icon("th")),
+    menuSubItem("Clustering", tabName = "clustering", icon = icon("object-group"))),
     menuItem("Context", tabName = "none", icon = icon("home"),
     menuSubItem("Graphical", tabName = "dashboard2", icon = icon("bar-chart-o")),
-    menuSubItem("Table", tabName = "widgets2", icon = icon("th"))),
+    menuSubItem("Table", tabName = "widgets2", icon = icon("th")),
+    menuSubItem("Tests", tabName = "tests1", icon = icon("flask"))),
     menuItem("City", tabName = "none", icon = icon("home"),
     menuSubItem("Graphical", tabName = "dashboard3", icon = icon("bar-chart-o")),
-    menuSubItem("Table", tabName = "widgets3", icon = icon("th")))
+    menuSubItem("Table", tabName = "widgets3", icon = icon("th")),
+    menuSubItem("Tests", tabName = "tests2", icon = icon("flask")))
              
   )
 )
@@ -54,11 +57,19 @@ tabItem(tabName = "widgets",
                  DT::dataTableOutput('tbl'))
         )
 ),
+tabItem(tabName = "clustering",
+        fluidRow(div(style = "height:0px", ""),
+                 column(12,h2("Barrio table overview")),
+                 column(12,div(style = "height:25px", ""),uiOutput("Variable7")),
+                 column(width = 6, plotOutput("cluster1", height=400, width = "100%")),
+                 column(width = 6, plotOutput("cluster2", height=400, width = "100%"))
+        )
+),
 tabItem(tabName = "dashboard2",
         fluidRow(div(style = "height:0px", ""),column(12,h2("Graphical context overview")),
                  column(6,div(style = "height:25px", ""),uiOutput("Variable5")),
                  column(6,div(style = "height:25px", ""),uiOutput("Cities")),
-                 column(width = 12, plotOutput("plot4", height=600, width = "100%"))
+                 column(width = 12, plotOutput("plot4", height=900, width = "100%"))
         )),
 tabItem(tabName = "widgets2",
         fluidRow(div(style = "height:0px", ""),
@@ -68,10 +79,15 @@ tabItem(tabName = "widgets2",
                  
         )
 ),
+tabItem(tabName = "tests1",
+        fluidRow(div(style = "height:0px", ""),
+                 column(12,h2("Test overview"),
+                 verbatimTextOutput("test1_resultBox")       
+                 ))),
 tabItem(tabName = "dashboard3",
         fluidRow(div(style = "height:0px", ""),column(12,h2("Graphical cities overview")),
                  column(6,div(style = "height:25px", ""),uiOutput("Variable6")),
-                 column(width = 12, plotOutput("plot5", height=600, width = "100%"))
+                 column(width = 12, plotOutput("plot5", height=900, width = "100%"))
         )),
 tabItem(tabName = "widgets3",
         fluidRow(div(style = "height:0px", ""),
@@ -80,7 +96,12 @@ tabItem(tabName = "widgets3",
                         DT::dataTableOutput('tbl3'))
                  
         )
-)
+),
+tabItem(tabName = "tests2",
+        fluidRow(div(style = "height:0px", ""),
+                 column(12,h2("Test overview"),
+                        verbatimTextOutput("test2_resultBox")       
+                 )))
 ))
 
 dashboardPage(

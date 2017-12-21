@@ -4,19 +4,20 @@ library(dunn.test)
 dataset <- read_csv("/Users/robsalasco/Dev/barrio-indicators-evaltool/data.csv",
                     col_types = cols(ID_W = col_character(),X1 = col_skip()))
 
-dataset <- dataset %>% filter(!is.na(listo))
-vars <- unique(dataset$codename)
+test1 <- dataset %>% filter(!is.na(listo))
+vars_test1 <- unique(test1$codename)
 
-stage_2_nonormal_test <- dataset %>% 
+stage_2_nonormal_test <- test1 %>% 
   slice_rows(c("codename")) %>% 
   by_slice(~tidy(with(.x,kruskal.test(listo~factor(LOCATION))))) %>%
   unnest() %>% select(codename,p.value,method)
 
-for(x in vars){
-  print(x)
-  posthoc.kruskal.dunn.test(subset(dataset,codename==x)$listo,factor(subset(dataset,codename==x)$LOCATION), "bonferroni")
-  #dunn.test(subset(dataset,codename==x)$listo,factor(subset(dataset,codename==x)$LOCATION),list=T,table = F,kw=F)
-}
+log <- capture.output({
+  test1_result <- lapply(vars_test1, function(x){dunn.test(subset(test1,codename==x)$listo,factor(subset(test1,codename==x)$LOCATION),list=T,table = F,kw=F)})
+})
+
+
+
 
 dataset %>% 
   slice_rows(c("LOCATION","codename")) %>% 
